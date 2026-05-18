@@ -2,6 +2,7 @@
 **ESP32-based Pomodoro timer with API options**
 
 V1.0 notes:
+---
 
 - the whole board is getting a bit warm
 - on/off button is hard to reach, might as well remove
