@@ -28,17 +28,131 @@ bool idleLedsOff = false;
 const uint32_t COLOR_IDLE  = Adafruit_NeoPixel::Color(255, 80, 0);  // orange
 const uint32_t COLOR_WORK  = Adafruit_NeoPixel::Color(0, 255, 0);   // green
 const uint32_t COLOR_BREAK = Adafruit_NeoPixel::Color(255, 0, 0);   // red
+uint32_t currentColor = 0;
+
+// --- Transitions ---
+enum Transition { SET_RING, RUNNING_LIGHT, RUNNING_FILL, RUNNING_LIGHT_CLEAR, FADE };
+Transition transition = FADE;
+
+// --- Transition timing ---
+const int MIN_DELAY = 10;
+const int MAX_DELAY = 500;
+uint16_t transitionDelayMs = 10; // MIN_DELAY-MAX_DELAY (10-500) ms per pixel
+
 
 void setRing(uint32_t color) {
   for (int i = 0; i < NUM_LEDS; i++) {
     strip.setPixelColor(i, color);
   }
   strip.show();
+
+  currentColor = color;
+}
+
+
+void runningLights(uint32_t color) {
+  allLedsOff();
+
+  for (int i = 0; i < NUM_LEDS; i++) {
+    strip.clear();
+
+    strip.setPixelColor(i, color);
+
+    // Small tail behind the running LED
+    int tail1 = (i - 1 + NUM_LEDS) % NUM_LEDS;
+    int tail2 = (i - 2 + NUM_LEDS) % NUM_LEDS;
+
+    strip.setPixelColor(tail1, color);
+    strip.setPixelColor(tail2, color);
+
+    strip.show();
+    delay(constrain(transitionDelayMs, MIN_DELAY, MAX_DELAY));
+  }
+
+  setRing(color);
+}
+
+void runningFillClear(uint32_t color) {
+  allLedsOff();
+
+  for (int i = 0; i < NUM_LEDS; i++) {
+    strip.setPixelColor(i, color);
+    strip.show();
+    delay(constrain(transitionDelayMs, MIN_DELAY, MAX_DELAY));
+  }
+}
+
+void runningFill(uint32_t color) {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    strip.setPixelColor(i, color);
+    strip.show();
+    delay(constrain(transitionDelayMs, MIN_DELAY, MAX_DELAY));
+  }
+}
+
+uint8_t blend8(uint8_t from, uint8_t to, uint8_t step, uint8_t steps) {
+  return from + ((int16_t)(to - from) * step) / steps;
+}
+
+void fadeToColor(uint32_t targetColor) {
+  uint8_t r1 = (currentColor >> 16) & 0xFF;
+  uint8_t g1 = (currentColor >> 8)  & 0xFF;
+  uint8_t b1 =  currentColor        & 0xFF;
+
+  uint8_t r2 = (targetColor >> 16) & 0xFF;
+  uint8_t g2 = (targetColor >> 8)  & 0xFF;
+  uint8_t b2 =  targetColor        & 0xFF;
+
+  const uint8_t fadeSteps = 40;
+  uint16_t d = constrain(transitionDelayMs, MIN_DELAY, MAX_DELAY);
+
+  for (uint8_t step = 0; step <= fadeSteps; step++) {
+    uint32_t c = strip.Color(
+      blend8(r1, r2, step, fadeSteps),
+      blend8(g1, g2, step, fadeSteps),
+      blend8(b1, b2, step, fadeSteps)
+    );
+
+    for (int i = 0; i < NUM_LEDS; i++) {
+      strip.setPixelColor(i, c);
+    }
+
+    strip.show();
+    delay(d);
+  }
+
+  currentColor = targetColor;
 }
 
 void allLedsOff() {
   strip.clear();
   strip.show();
+}
+
+void applyTransition(uint32_t color) {
+  switch (transition) {
+    case SET_RING:
+      setRing(color);
+      break;
+
+    case RUNNING_LIGHT:
+      runningLights(color);
+      break;
+
+    case RUNNING_FILL:
+      runningFill(color);
+      currentColor = color;
+      break;
+
+    case RUNNING_LIGHT_CLEAR:
+      runningFillClear(color);
+      currentColor = 0;
+      break;
+
+    case FADE:
+      fadeToColor(color);
+      break;
+  }
 }
 
 void enterState(State s) {
@@ -48,15 +162,15 @@ void enterState(State s) {
 
   switch (state) {
     case IDLE:
-      setRing(COLOR_IDLE);
+      applyTransition(COLOR_IDLE);
       break;
 
     case WORK:
-      setRing(COLOR_WORK);
+      applyTransition(COLOR_WORK);
       break;
 
     case BREAK:
-      setRing(COLOR_BREAK);
+      applyTransition(COLOR_BREAK);
       break;
   }
 }
