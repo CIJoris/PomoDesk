@@ -125,10 +125,12 @@ void setup() {
 
   button.begin();
 
+  delay(200); // small delay before initializing LEDs to reduce startup surge
+
   strip.begin();
   strip.setBrightness(150);  // adjust as needed: 0-255
   allLedsOff();
-  
+
   delay(5);
   enterState(IDLE);
 }
