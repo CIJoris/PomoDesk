@@ -11,7 +11,7 @@ const int PWR_LED   = 18;      // IO18, sink power LED to GND
 // --- LEDs ---
 const int NUM_LEDS = 19;
 Adafruit_NeoPixel strip(NUM_LEDS, LED_DATA, NEO_GRB + NEO_KHZ800);
-const int LED_BRIGHTNESS = 150;  // adjust as needed: 0-255
+uint16_t ledBrightness = 150;  // adjust as needed: 0-255
 
 // --- Timing ---
 const uint32_t WORK_MS     = 45UL * 60UL * 1000UL;
@@ -336,7 +336,7 @@ void setup() {
   delay(200); // small delay before initializing LEDs to reduce startup surge
 
   strip.begin();
-  strip.setBrightness(LED_BRIGHTNESS);
+  strip.setBrightness(ledBrightness);
   allLedsOff();
 
   delay(5);
