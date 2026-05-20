@@ -11,6 +11,7 @@ const int PWR_LED   = 18;      // IO18, sink power LED to GND
 // --- LEDs ---
 const int NUM_LEDS = 19;
 Adafruit_NeoPixel strip(NUM_LEDS, LED_DATA, NEO_GRB + NEO_KHZ800);
+const int LED_BRIGHTNESS = 150;  // adjust as needed: 0-255
 
 // --- Timing ---
 const uint32_t WORK_MS     = 45UL * 60UL * 1000UL;
@@ -38,7 +39,7 @@ Transition transition = FADE_OUT_IN;
 // --- Transition timing ---
 const int MIN_DELAY = 10;
 const int MAX_DELAY = 500;
-uint16_t transitionDelayMs = 40; // MIN_DELAY-MAX_DELAY (10-500) ms per pixel, fast(10), pleasant(40), relaxed(200)
+uint16_t transitionDelayMs = 25; // (10-500) ms per pixel, fast(10), pleasant(40), relaxed(100+)
 
 
 void setRing(uint32_t color) {
@@ -335,7 +336,7 @@ void setup() {
   delay(200); // small delay before initializing LEDs to reduce startup surge
 
   strip.begin();
-  strip.setBrightness(150);  // adjust as needed: 0-255
+  strip.setBrightness(LED_BRIGHTNESS);
   allLedsOff();
 
   delay(5);
