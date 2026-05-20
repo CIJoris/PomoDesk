@@ -16,9 +16,10 @@ Adafruit_NeoPixel strip(NUM_LEDS, LED_DATA, NEO_GRB + NEO_KHZ800);
 const uint32_t WORK_MS     = 45UL * 60UL * 1000UL;
 const uint32_t BREAK_MS    =  5UL * 60UL * 1000UL;
 const uint32_t IDLE_LED_MS = 10UL * 60UL * 1000UL;
+const uint32_t LONG_PRESS_MS = 2000;
 
 // --- States ---
-enum State { IDLE, WORK, BREAK };
+enum State { IDLE, WORK, BREAK, ALL_OFF };
 State state = IDLE;
 
 uint32_t stateStartMs = 0;
@@ -31,13 +32,13 @@ const uint32_t COLOR_BREAK = Adafruit_NeoPixel::Color(255, 0, 0);   // red
 uint32_t currentColor = 0;
 
 // --- Transitions ---
-enum Transition { SET_RING, RUNNING_LIGHT, RUNNING_FILL, RUNNING_LIGHT_CLEAR, FADE };
-Transition transition = FADE;
+enum Transition { SET_RING, RUNNING_LIGHT, RUNNING_FILL, RUNNING_LIGHT_CLEAR, FADE, FADE_OUT_IN };
+Transition transition = FADE_OUT_IN;
 
 // --- Transition timing ---
 const int MIN_DELAY = 10;
 const int MAX_DELAY = 500;
-uint16_t transitionDelayMs = 10; // MIN_DELAY-MAX_DELAY (10-500) ms per pixel
+uint16_t transitionDelayMs = 40; // MIN_DELAY-MAX_DELAY (10-500) ms per pixel, fast(10), pleasant(40), relaxed(200)
 
 
 void setRing(uint32_t color) {
@@ -124,6 +125,53 @@ void fadeToColor(uint32_t targetColor) {
   currentColor = targetColor;
 }
 
+void fadeOutIn(uint32_t targetColor) {
+  uint8_t r1 = (currentColor >> 16) & 0xFF;
+  uint8_t g1 = (currentColor >> 8)  & 0xFF;
+  uint8_t b1 =  currentColor        & 0xFF;
+
+  uint8_t r2 = (targetColor >> 16) & 0xFF;
+  uint8_t g2 = (targetColor >> 8)  & 0xFF;
+  uint8_t b2 =  targetColor        & 0xFF;
+
+  const uint8_t fadeSteps = 40;
+  uint16_t d = constrain(transitionDelayMs, MIN_DELAY, MAX_DELAY);
+
+  // Fade out to off
+  for (uint8_t step = 0; step <= fadeSteps; step++) {
+    uint32_t c = strip.Color(
+      blend8(r1, 0, step, fadeSteps),
+      blend8(g1, 0, step, fadeSteps),
+      blend8(b1, 0, step, fadeSteps)
+    );
+
+    for (int i = 0; i < NUM_LEDS; i++) {
+      strip.setPixelColor(i, c);
+    }
+
+    strip.show();
+    delay(d);
+  }
+
+  // Fade in to new color
+  for (uint8_t step = 0; step <= fadeSteps; step++) {
+    uint32_t c = strip.Color(
+      blend8(0, r2, step, fadeSteps),
+      blend8(0, g2, step, fadeSteps),
+      blend8(0, b2, step, fadeSteps)
+    );
+
+    for (int i = 0; i < NUM_LEDS; i++) {
+      strip.setPixelColor(i, c);
+    }
+
+    strip.show();
+    delay(d);
+  }
+
+  currentColor = targetColor;
+}
+
 void allLedsOff() {
   strip.clear();
   strip.show();
@@ -152,6 +200,10 @@ void applyTransition(uint32_t color) {
     case FADE:
       fadeToColor(color);
       break;
+
+    case FADE_OUT_IN:
+      fadeOutIn(color);
+      break;
   }
 }
 
@@ -171,6 +223,10 @@ void enterState(State s) {
 
     case BREAK:
       applyTransition(COLOR_BREAK);
+      break;
+
+    case ALL_OFF:
+      allLedsOff();
       break;
   }
 }
@@ -194,19 +250,27 @@ void nextState() {
 // --- Debounced button ---
 struct DebouncedButton {
   int pin;
+
   bool lastRaw = HIGH;
   bool stable = HIGH;
+
+  bool pressHandled = false;
+
   uint32_t lastChangeMs = 0;
+  uint32_t pressStartMs = 0;
+
   static const uint32_t DEBOUNCE_MS = 30;
 
   void begin() {
-    pinMode(pin, INPUT_PULLUP);   // button should connect IO1 to GND
+    pinMode(pin, INPUT_PULLUP);
+
     lastRaw = digitalRead(pin);
     stable = lastRaw;
+
     lastChangeMs = millis();
   }
 
-  bool pressedEvent() {
+  void update() {
     bool raw = digitalRead(pin);
 
     if (raw != lastRaw) {
@@ -215,10 +279,39 @@ struct DebouncedButton {
     }
 
     if (millis() - lastChangeMs > DEBOUNCE_MS) {
+
       if (stable != raw) {
         stable = raw;
-        if (stable == LOW) return true;   // active-low press
+
+        if (stable == LOW) {
+          // button pressed
+          pressStartMs = millis();
+          pressHandled = false;
+        }
       }
+    }
+  }
+
+  bool shortPressEvent() {
+    if (stable == HIGH &&
+        !pressHandled &&
+        (millis() - pressStartMs) < LONG_PRESS_MS &&
+        pressStartMs != 0) {
+
+      pressHandled = true;
+      return true;
+    }
+
+    return false;
+  }
+
+  bool longPressEvent() {
+    if (stable == LOW &&
+        !pressHandled &&
+        (millis() - pressStartMs >= LONG_PRESS_MS)) {
+
+      pressHandled = true;
+      return true;
     }
 
     return false;
@@ -254,9 +347,23 @@ void loop() {
 
   uint32_t now = millis();
 
-  // Button cycles: IDLE -> WORK -> BREAK -> IDLE
-  if (button.pressedEvent()) {
-    nextState();
+  button.update();
+
+  // Long press -> ALL OFF mode
+  if (button.longPressEvent()) {
+    enterState(ALL_OFF);
+    return;
+  }
+
+  // Short press cycles states
+  if (button.shortPressEvent()) {
+
+    if (state == ALL_OFF) {
+      enterState(IDLE);
+    } else {
+      nextState();
+    }
+
     return;
   }
 
