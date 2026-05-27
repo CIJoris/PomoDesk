@@ -1,4 +1,8 @@
 # PomoDesk - Physical Pomodoro Timer
+
+<img width="1983" height="793" alt="pomo-desk-banner-image" src="https://github.com/user-attachments/assets/f1bfd086-d3e4-4fbc-a294-61849d2e73e7" />
+
+
 **ESP32-based Pomodoro timer with API options**
 
 Designing PCB's, creating or adjusting schematics, doing layout, all these tasks put me in this trance, this FLOW, as some would say.
@@ -14,11 +18,6 @@ The perfect way to do this, for me personally, is to have a Pomodoro timer.
 I wanted to create a Pomodoro timer, that's not some stupid app I see counting down on my screen. 
 It needs to be physical, elegant and as unobtrusive as possible, and only show when it's time to break.
 This first iteration is far from perfect, but it's a start.
-
-First version (v1.0) here:
-
-<img width="500" height="500" alt="pomodesk-enclosure-v1 0" src="https://github.com/user-attachments/assets/0fef3719-c67c-4a1d-9812-06c7a239afa1" />
-<img width="500" height="500" alt="pomodesk-render-v1 0" src="https://github.com/user-attachments/assets/4962de39-3fbb-49da-9ca9-86c4439247b4" />
 
 ---
 
