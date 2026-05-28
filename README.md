@@ -21,4 +21,11 @@ This first iteration is far from perfect, but it's a start.
 
 ---
 
+The very first version is here:
+\
+\
+<img width="600" height="499" alt="pomo-desk-orange" src="https://github.com/user-attachments/assets/9fd43c3e-4881-455e-bc60-1d625a76d8db" />
+
+---
+
 *Feel free to send me constructive criticism or things you would like me to implement, or even if you would like to help me develop this system!*
