@@ -60,22 +60,6 @@ Version 1.1 adds a local configuration mode directly on the ESP32-S3.
 
 By pressing and holding the button, PomoDesk can start its own Wi-Fi configuration portal. From there, the timer can be customized without needing to reflash the firmware.
 
-
-### Added in v1.1
-
-* Local Wi-Fi configuration webserver
-* Adjustable state colors
-* Adjustable Focus, Break and Idle timings
-* Multiple LED transition modes
-* Adjustable transition speed
-* Brightness control
-* ECO brightness mode
-* Reset to default settings
-* Config mode with blue LED indication
-* Deep sleep mode
-* Wake-up by button press
-* Settings saved to ESP32 memory
-
 ### Button controls
 
 <img width="1774" height="887" alt="WhatsApp Image 2026-05-31 at 11 31 27" src="https://github.com/user-attachments/assets/a8e5a4d2-66d4-4e88-baff-9ad13a10f955" />
@@ -95,7 +79,19 @@ Open: http://pomodesk.local
 Fallback: http://10.10.10.1
 ```
 
-
+### Added in v1.1 
+* Local Wi-Fi configuration webserver
+* Adjustable state colors
+* Adjustable Focus, Break and Idle timings
+* Multiple LED transition modes
+* Adjustable transition speed
+* Brightness control
+* ECO brightness mode
+* Reset to default settings
+* Config mode with blue LED indication
+* Deep sleep mode
+* Wake-up by button press
+* Settings saved to ESP32 memory
 
 ---
 
