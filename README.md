@@ -28,13 +28,16 @@ The device has three states:
 * Focus (Green) – A dedicated work period where distractions are minimized and attention stays on a single task.
 * Break (Red) – A short recovery period to step away, stretch, grab a drink, or simply reset before the next focus session.
 
-By default, PomoDesk uses a 45-minute focus period followed by a 5-minute break, after which it returns to Idle and waits for the next session. All timings can be customized through the built-in configuration webserver.
-
 <img width="1774" height="887" alt="WhatsApp Image 2026-05-30 at 12 02 46" src="https://github.com/user-attachments/assets/5a40e451-dc39-4aef-9b0e-190097d0fef9" />
+
+By default, PomoDesk uses a 45-minute focus period followed by a 5-minute break, after which it returns to Idle and waits for the next session. All timings can be customized through the built-in configuration webserver.
+ 
 
 **Power**
 
 PomoDesk is powered through a standard USB-C connection and is designed to run continuously on any 5V USB power source.
+
+<img width="1983" height="793" alt="WhatsApp Image 2026-05-29 at 22 11 27" src="https://github.com/user-attachments/assets/c3e7b955-128f-4d6b-a01e-8a0cf5e147a6" /> 
 
 It can be powered from:
 
@@ -44,8 +47,6 @@ It can be powered from:
 * A power bank for portable use
 
 The ESP32-S3 and LED ring have been optimized for low power consumption, and the built-in ECO mode and deep sleep functionality help minimize energy usage when the device is idle.
-
-<img width="1983" height="793" alt="WhatsApp Image 2026-05-29 at 22 11 27" src="https://github.com/user-attachments/assets/c3e7b955-128f-4d6b-a01e-8a0cf5e147a6" />
 
 This first iteration is far from perfect, but it's a start.
 
