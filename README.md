@@ -54,7 +54,7 @@ This first iteration is far from perfect, but it's a start.
 
 ---
 
-## v1.1 - Local Configuration Webserver
+# V1.1 - Local Configuration Webserver
 
 Version 1.1 adds a local configuration mode directly on the ESP32-S3.
 
