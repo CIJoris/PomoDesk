@@ -64,22 +64,6 @@ V1.0:
 - Multiple LED transition modes
 - Settings saved in ESP32 Preferences memory
 
-* *Pins for ESP32-S3-WROOM-1*
-BTN_STATE = 1;       // IO1, button to GND
-LED_DATA  = 48;      // IO48, WS2812B data in
-PWR_LED   = 18;      // IO18, sink power LED to GND
-
-* *LEDs*
-NUM_LEDS = 19;
-
-* *Timing*
-WORK_MS     = 45 mins;
-BREAK_MS    =  5 mins;
-IDLE_LED_MS = 10 mins;
-
-**Focus for 45 minutes, break for 5, then continue.**
-
-
 V1.1:
 ---
 
@@ -98,7 +82,7 @@ V1.1:
 ## Controls
 
 - Short press: step through states
-- Hold 1.2 seconds: enter or exit config mode
+- Hold 1.5 seconds: enter or exit config mode
 - Hold 3 seconds: go to sleep
 
 ## States
