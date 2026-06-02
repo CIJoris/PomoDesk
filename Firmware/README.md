@@ -54,8 +54,7 @@ After flashing, the device will boot directly into the **Idle** state and is rea
 
 
 
-V1.0:
----
+# V1.0:
 
 ## Features
 
@@ -64,8 +63,7 @@ V1.0:
 - Multiple LED transition modes
 - Settings saved in ESP32 Preferences memory
 
-V1.1:
----
+# V1.1:
 
 **Now with a configurable NeoPixel LED ring and a built-in local configuration webserver.**
 
