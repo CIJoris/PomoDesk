@@ -935,7 +935,7 @@ void toggleConfigServer() {
 // --- Button ---
 struct Button {
   int pin;
-
+  
   bool lastRaw = HIGH;
   bool stable = HIGH;
 
