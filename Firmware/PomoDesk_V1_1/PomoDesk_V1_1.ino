@@ -947,6 +947,8 @@ struct Button {
 
   static const uint32_t DEBOUNCE_MS = 30;
 
+  explicit Button(int pinNumber) : pin(pinNumber) {}
+
   void begin() {
     pinMode(pin, INPUT_PULLUP);
     lastRaw = digitalRead(pin);
